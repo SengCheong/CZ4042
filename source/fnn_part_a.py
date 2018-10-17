@@ -14,7 +14,7 @@ import multiprocessing as mp
 def scale(X, X_min, X_max):
     return (X - X_min)/(X_max-X_min)
 
-def evaluate_fnn_param(params):
+def evaluate_fnn_param(param):
 
     #============================== PROJECT PARAM STARTS HERE ===============================
 
@@ -25,7 +25,7 @@ def evaluate_fnn_param(params):
     #network parameters - these are the parameters we need to plot for the project
     hidden_neurons = 10
     decay = 0.000001
-    batch_size = params
+    batch_size = param
 
     #training parameters
     learning_rate = 0.001
@@ -232,6 +232,8 @@ def main():
     epochs = 1000
     batch_size = [128,256]
 
+    
+    param = batch_size
     p = mp.Pool(processes = no_threads)
     results = p.map(evaluate_fnn_param, batch_size)
 
@@ -245,27 +247,26 @@ def main():
         logs.append(result[3])
 
 
-
     plt.figure(1)
     for acc in accs:
         plt.plot(range(epochs), acc)
     plt.xlabel(str(epochs) + ' iterations')
     plt.ylabel('Train accuracy')
-    plt.legend(batch_size)
+    plt.legend(params)
 
     plt.figure(2)
     for classification in classifications:
         plt.plot(range(epochs), classification)
     plt.xlabel(str(epochs) + ' iterations')
     plt.ylabel('classification errors')
-    plt.legend(batch_size)
+    plt.legend(params)
 
     plt.figure(3)
     for log in logs:
          plt.plot(range(epochs), log)
     plt.xlabel(str(epochs) + ' iterations')
     plt.ylabel('Log Loss')
-    plt.legend(batch_size)
+    plt.legend(params)
 
     plt.show()
 

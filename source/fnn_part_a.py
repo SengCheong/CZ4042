@@ -7,6 +7,7 @@ import numpy as np
 #use matplotlib because of fucked up
 #import pylab as plt
 import matplotlib.pyplot as plt
+from timeit import default_timer as timer
 
 # scale data by performing vector arithmetic
 def scale(X, X_min, X_max):
@@ -21,12 +22,11 @@ NUM_CLASSES = 6
 #network parameters - these are the parameters we need to plot for the project
 hidden_neurons = 10
 decay = 0.000001
-batch_size = 32
+batch_size = 64
 
 #training parameters
 learning_rate = 0.001
 epochs = 1000
-ratio = 0.7
 
 #randomness initialization
 seed = 10
@@ -174,6 +174,9 @@ with tf.Session() as sess:
     #number of training patterns used
     indexes = np.arange(n)
 
+    #timer vars
+    time_taken = 0
+
     #iterate over each epoch
     for i in range(epochs):
 
@@ -190,17 +193,26 @@ with tf.Session() as sess:
         #so for each epoch, takes the entire data set in mani-atch patterns
         #compute the new weights from the loss of the current data pattern, then updates the weights and bias
         #so eventually for each epoch the entire dataset is consumed
-        for start, end in zip(range(0, n+batch_size, batch_size), range(batch_size, n+batch_size, batch_size)):
+        #we add 1 because range runs from 0 to n-1. numpy array indexing also runs from 0 to n - 1
+        #suppose n is 128. then zip will return a tuple (0,8) to (112,120) but not (120,128). the last 8 patterns will be missed
+
+        start_time = timer()
+
+        for start, end in zip(range(0, n+1, batch_size), range(batch_size, n+1, batch_size)):
             #remember i said we had endpoints? 1 was to feed the computational graph. the other was to access the computed outputs for target learning
             #also note: np arrays take from start to end - 1, so no worries of overlap
             train_op.run(feed_dict={x: randomized_X[start:end], y_: randomized_Y[start:end], beta: decay})
-        
+
+        end_time = timer()
+        time_taken = time_taken + (end_time-start_time)
+
         #at the end of each epoch, we do classification errors checking
         #we pass a set of data, then evaluate the logits
         train_acc.append(accuracy.eval(feed_dict={x: testX, y_: testY}))
 
         if i % 100 == 0:
-            print('iter %d: accuracy %g'%(i, train_acc[i]))
+            print('iter %d: accuracy -  %g, time taken - %g'%(i, train_acc[i],time_taken))
+            time_taken = 0
 
 
 # plot learning curves

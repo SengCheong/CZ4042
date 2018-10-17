@@ -28,7 +28,7 @@ def evaluate_fnn_param(param):
     batch_size = param
 
     #training parameters
-    learning_rate = 0.001
+    learning_rate = 0.01
     epochs = 1000
 
     #randomness initialization
@@ -232,10 +232,9 @@ def main():
     epochs = 1000
     batch_size = [128,256]
 
-    
-    param = batch_size
+    params = batch_size
     p = mp.Pool(processes = no_threads)
-    results = p.map(evaluate_fnn_param, batch_size)
+    results = p.map(evaluate_fnn_param, params)
 
 
     accs = []

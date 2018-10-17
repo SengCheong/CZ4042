@@ -88,6 +88,7 @@ logits  = tf.matmul(x, weights) + biases
 
 #compute the cross entropy, recall that for softmax, delta_U involves K and U, where K is the one_hot matrix described by y_, and logits 
 #as the synaptic input vector. returns a tensor; starting to think this returns the cross entropy for each neuron?
+# https://stackoverflow.com/questions/34240703/what-is-logits-softmax-and-softmax-cross-entropy-with-logits
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_, logits=logits)
 
 #returns average loss across all patterns in a epoch ..? think because this is batch, so the average loss per neuron needs to be computed?

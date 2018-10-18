@@ -220,9 +220,10 @@ def evaluate_fnn_param(param):
                 print('iter %d: accuracy -  %g, time taken - %g'%(i, test_acc[i],time_taken))
                 time_taken = 0
                 
-    batch_time = (total_time_taken/epochs)/(n/batch_size)
-    
-    return (param,test_acc,test_log,train_classification, train_log, total_time_taken/epochs)
+    #batch_time = (total_time_taken/epochs)/(n/batch_size)
+    epoch_time = total_time_taken/epochs
+
+    return (param,test_acc,test_log,train_classification, train_log, epoch_time)
 
 def main():
 

@@ -209,7 +209,7 @@ def evaluate_fnn_param(param):
                 #remember i said we had endpoints? 1 was to feed the computational graph. the other was to access the computed outputs for target learning
                 #also note: np arrays take from start to end - 1, so no worries of overlap
                 train_op.run(feed_dict={x: randomized_X[start:end], y_: randomized_Y[start:end], beta: decay})
-
+                
             end_time = timer()
             time_taken = time_taken + (end_time-start_time)
             total_time_taken = total_time_taken + (end_time-start_time)
@@ -223,10 +223,12 @@ def evaluate_fnn_param(param):
             #print(statistics.eval(feed_dict={x: testX, y_: testY}))
 
             if i % 100 == 0:
-                print('iter %d: accuracy -  %g, time taken - %g'%(i, test_acc[i],time_taken))
+                print('Batch Size: %d - iter:%d  - accuracy:%g  - time taken: %g'%(batch_size,i, test_acc[i],time_taken))
                 time_taken = 0
 
-    return (param,test_acc,test_log,train_classification, train_log, total_time_taken)
+    batch_time = (total_time_taken/epochs)/(n/batch_size)
+                
+    return (param,test_acc,test_log,train_classification, train_log, batch_time)
 
 
 def main():
@@ -253,7 +255,7 @@ def main():
         test_logs.append(result[2])
         train_classifications.append(result[3])
         train_logs.append(result[4])
-        time_taken.append((result[5]/epochs))
+        time_taken.append(result[5])
 
     plt.figure(1)
     for acc in test_accs:
@@ -283,11 +285,14 @@ def main():
     plt.ylabel('Log Loss against training')
     plt.legend(params)
 
+    print(batch_size)
+    print(time_taken)
+   
     plt.figure(5)
     plt.plot(batch_size, time_taken, 'ro')
-    plt.xlabel(' Time taken per epoch')
-    plt.ylabel('Batch Size')
-
+    plt.xlabel('Batch Size')
+    plt.ylabel('Time taken per epoch')
+    
     plt.show()
 
 if __name__ == '__main__':

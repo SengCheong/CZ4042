@@ -182,7 +182,7 @@ def evaluate_fnn_param(param):
 
         #timer vars
         time_taken = 0
-
+        total_time_taken = 0
         #iterate over each epoch
         for i in range(epochs):
 
@@ -211,6 +211,7 @@ def evaluate_fnn_param(param):
 
             end_time = timer()
             time_taken = time_taken + (end_time-start_time)
+            total_time_taken = total_time_taken + (end_time-start_time)
 
             #at the end of each epoch, we do classification errors checking
             #we pass a set of data, then evaluate the logits
@@ -224,8 +225,7 @@ def evaluate_fnn_param(param):
                 print('iter %d: accuracy -  %g, time taken - %g'%(i, test_acc[i],time_taken))
                 time_taken = 0
 
-    return (param,test_acc,test_log,train_classification, train_log)
-
+    return (param,test_acc,test_log,train_classification, train_log, total_time_taken)
 
 def main():
 
@@ -250,6 +250,7 @@ def main():
         test_logs.append(result[2])
         train_classifications.append(result[3])
         train_logs.append(result[4])
+        time_taken.append((result[5]/epochs))
 
     plt.figure(1)
     for acc in test_accs:
@@ -278,6 +279,11 @@ def main():
     plt.xlabel(str(epochs) + ' iterations')
     plt.ylabel('Log Loss against training')
     plt.legend(params)
+
+    plt.figure(5)
+    plt.plot(batch_size, time_taken, 'ro')
+    plt.xlabel(' Time taken per epoch')
+    plt.ylabel('Batch Size')
 
     plt.show()
 

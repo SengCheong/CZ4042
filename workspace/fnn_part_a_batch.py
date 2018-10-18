@@ -42,8 +42,6 @@ def evaluate_fnn_param(param):
     #read training data, space delimited.
     train_input = np.loadtxt('sat_train.txt',delimiter=' ')
 
-    #count the number of input patterns as N
-    N = train_input.shape[0]
 
     #for all rows, extract the first 36 columns - corresponds to the 36 features
     trainX = train_input[:,:36]
@@ -85,8 +83,6 @@ def evaluate_fnn_param(param):
 
     #same stuff with test data, so will cut short the coments
     test_input = np.loadtxt('sat_test.txt', delimiter=' ')
-
-    M = train_input.shape[0]
 
     testX = test_input[:,:36]
     test_Y = test_input[:,-1].astype(int)

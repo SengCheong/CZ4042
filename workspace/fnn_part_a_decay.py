@@ -239,6 +239,7 @@ def main():
     test_logs = []
     train_classifications = []
     train_logs = []
+    time_taken = []
     
     for result in results:
         test_accs.append(result[1])

@@ -245,7 +245,8 @@ def main():
         classifications.append(result[2])
         logs.append(result[3])
 
-
+    params = ["Your Parameter: {}".format(i) for i in param]
+		
     plt.figure(1)
     for acc in accs:
         plt.plot(range(epochs), acc)

@@ -19,7 +19,7 @@ np.random.seed(seed)
 #read and divide data into test and train sets 
 cal_housing = np.loadtxt('cal_housing.data', delimiter=',')
 X_data, Y_data = cal_housing[:,:8], cal_housing[:,-1]
-Y_data = (np.asmatrix(Y_data)).transpose()
+#Y_data = (np.asmatrix(Y_data)).transpose()
 
 idx = np.arange(X_data.shape[0])
 np.random.shuffle(idx)

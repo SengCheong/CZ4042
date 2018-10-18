@@ -250,6 +250,12 @@ def main():
         train_classifications.append(result[3])
         train_logs.append(result[4])
         time_taken.append(result[5])
+        np.savetxt("hidden_{}_testacc.txt".format(result[0]),[result[1]],delimiter=",")
+        np.savetxt("hidden_{}_testlog.txt".format(result[0]),[result[2]],delimiter=",")
+        np.savetxt("hidden_{}_trainclass.txt".format(result[0]),[result[3]],delimiter=",")
+        np.savetxt("hidden_{}_trainlog.txt".format(result[0]),[result[4]],delimiter=",")
+        np.savetxt("hidden_{}_timetaken.txt".format(result[0]),[result[5]],delimiter=",")
+        
 
     plt.figure(1)
     for acc in test_accs:

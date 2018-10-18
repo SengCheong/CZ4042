@@ -14,7 +14,7 @@ import multiprocessing as mp
 def scale(X, X_min, X_max):
     return (X - X_min)/(X_max-X_min)
 
-def evaluate_fnn_3(param):
+def evaluate_fnn_3():
 
     #============================== PROJECT PARAM STARTS HERE ===============================
 
@@ -25,7 +25,7 @@ def evaluate_fnn_3(param):
     #network parameters - these are the parameters we need to plot for the project
     hidden_neurons = 10
     decay = 0.000001
-    batch_size = 16
+    batch_size = 32
 
     #training parameters
     learning_rate = 0.01
@@ -219,10 +219,10 @@ def evaluate_fnn_3(param):
             if i % 100 == 0:
                 print('iter %d: accuracy -  %g, time taken - %g'%(i, test_acc[i],time_taken))
                 time_taken = 0
-    batch_time = (total_time_taken/epochs)/(n/batch_size)
-    return (param,test_acc,test_log,train_classification, train_log, total_time_taken)
+    epoch_time = total_time_taken/epochs
+    return (test_acc,test_log,train_classification, train_log, epoch_time)
 
-def evaluate_fnn_4(param):
+def evaluate_fnn_4():
 
     #============================== PROJECT PARAM STARTS HERE ===============================
 
@@ -231,9 +231,9 @@ def evaluate_fnn_4(param):
     NUM_CLASSES = 6
 
     #network parameters - these are the parameters we need to plot for the project
-    hidden_neurons = param
+    hidden_neurons = 10
     decay = 0.000001
-    batch_size = 16
+    batch_size = 32
 
     #training parameters
     learning_rate = 0.01
@@ -437,8 +437,8 @@ def evaluate_fnn_4(param):
             if i % 100 == 0:
                 print('iter %d: accuracy -  %g, time taken - %g'%(i, test_acc[i],time_taken))
                 time_taken = 0
-    batch_time = (total_time_taken/epochs)/(n/batch_size)
-    return (param,test_acc,test_log,train_classification, train_log, total_time_taken)
+    epoch_time = total_time_taken/epochs
+    return (test_acc,test_log,train_classification, train_log, epoch_time)
 
 def main():
 
@@ -446,10 +446,10 @@ def main():
 
     epochs = 1000
  
-    param = [3,4]
+    layers = [3,4]
 
     results =[] 
-    params = ["Layers: {}".format(i) for i in params]
+    params = ["Layers: {}".format(i) for i in layers]
 
     results.append(evaluate_fnn_3())     
     results.append(evaluate_fnn_4())
@@ -461,11 +461,11 @@ def main():
     time_taken = []
     
     for result in results:
-        test_accs.append(result[1])
-        test_logs.append(result[2])
-        train_classifications.append(result[3])
-        train_logs.append(result[4])
-        time_taken.append((result[5]))
+        test_accs.append(result[0])
+        test_logs.append(result[1])
+        train_classifications.append(result[2])
+        train_logs.append(result[3])
+        time_taken.append((result[4]))
 
     plt.figure(1)
     for acc in test_accs:
@@ -496,9 +496,10 @@ def main():
     plt.legend(params)
 
     plt.figure(5)
-    plt.plot(batch_size, time_taken, 'ro')
-    plt.xlabel(' Time taken per epoch')
-    plt.ylabel('Batch Size')
+    plt.plot(layers, time_taken, 'ro')
+    plt.xlabel('Layer Size')
+    plt.ylabel(' Time taken per epoch')
+    
 
     plt.show()
 

@@ -279,9 +279,9 @@ def main():
     plt.legend(params)
 
     plt.figure(5)
-    plt.plot(batch_size, time_taken, 'ro')
+    plt.plot(hidden, time_taken, 'ro')
     plt.xlabel(' Time taken per epoch')
-    plt.ylabel('Batch Size')
+    plt.ylabel('Number of Hidden Neurons')
 
     plt.show()
 

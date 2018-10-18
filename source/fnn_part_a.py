@@ -170,7 +170,8 @@ def evaluate_fnn_param(param):
         sess.run(tf.global_variables_initializer())
 
         #just a list to track each epoch's accuracy
-        train_acc = []
+        test_acc = []
+        test_log = []
         train_classification = []
         train_log = []
 
@@ -213,16 +214,17 @@ def evaluate_fnn_param(param):
 
             #at the end of each epoch, we do classification errors checking
             #we pass a set of data, then evaluate the logits
-            train_acc.append(accuracy.eval(feed_dict={x: testX, y_: testY, beta: decay}))
-            train_classification.append(classification_errors.eval(feed_dict={x: testX, y_: testY, beta: decay}))
-            train_log.append(loss.eval(feed_dict={x: testX, y_: testY, beta: decay}))
+            test_acc.append(accuracy.eval(feed_dict={x: testX, y_: testY, beta: decay}))
+            test_log.append(loss.eval(feed_dict={x: testX, y_: testY, beta: decay}))
+            train_classification.append(classification_errors.eval(feed_dict={x: trainX, y_: trainY, beta: decay}))
+            train_log.append(loss.eval(feed_dict={x: trainX, y_: trainY, beta: decay}))
             #print(statistics.eval(feed_dict={x: testX, y_: testY}))
 
             if i % 100 == 0:
-                print('iter %d: accuracy -  %g, time taken - %g'%(i, train_acc[i],time_taken))
+                print('iter %d: accuracy -  %g, time taken - %g'%(i, test_acc[i],time_taken))
                 time_taken = 0
 
-    return (params,train_acc, train_classification, train_log)
+    return (param,test_acc,test_log,train_classification, train_log)
 
 
 def main():
@@ -236,36 +238,45 @@ def main():
     p = mp.Pool(processes = no_threads)
     results = p.map(evaluate_fnn_param, params)
 
-
-    accs = []
-    classifications = []
-    logs = []
-    for result in results:
-        accs.append(result[1])
-        classifications.append(result[2])
-        logs.append(result[3])
-
-    params = ["Your Parameter: {}".format(i) for i in param]
+    params = ["Your Parameter: {}".format(i) for i in params]
 		
+    test_accs = []
+    test_logs = []
+    train_classifications = []
+    train_logs = []
+    
+    for result in results:
+        test_accs.append(result[1])
+        test_logs.append(result[2])
+        train_classifications.append(result[3])
+        train_logs.append(result[4])
+
     plt.figure(1)
-    for acc in accs:
+    for acc in test_accs:
         plt.plot(range(epochs), acc)
     plt.xlabel(str(epochs) + ' iterations')
-    plt.ylabel('Train accuracy')
+    plt.ylabel('Accuracy against Test Data')
     plt.legend(params)
 
     plt.figure(2)
-    for classification in classifications:
+    for classification in train_classifications:
         plt.plot(range(epochs), classification)
     plt.xlabel(str(epochs) + ' iterations')
-    plt.ylabel('classification errors')
+    plt.ylabel('classification errors against training data')
     plt.legend(params)
 
     plt.figure(3)
-    for log in logs:
+    for log in test_logs:
          plt.plot(range(epochs), log)
     plt.xlabel(str(epochs) + ' iterations')
-    plt.ylabel('Log Loss')
+    plt.ylabel('Log Loss against test data')
+    plt.legend(params)
+    
+    plt.figure(4)
+    for log in train_logs:
+         plt.plot(range(epochs), log)
+    plt.xlabel(str(epochs) + ' iterations')
+    plt.ylabel('Log Loss against training')
     plt.legend(params)
 
     plt.show()

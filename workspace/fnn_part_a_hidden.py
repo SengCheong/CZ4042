@@ -222,7 +222,7 @@ def evaluate_fnn_param(param):
                 
     batch_time = (total_time_taken/epochs)/(n/batch_size)
     
-    return (param,test_acc,test_log,train_classification, train_log, total_time_taken)
+    return (param,test_acc,test_log,train_classification, train_log, total_time_taken/epochs)
 
 def main():
 
@@ -280,9 +280,9 @@ def main():
 
     plt.figure(5)
     plt.plot(hidden, time_taken, 'ro')
-    plt.xlabel(' Time taken per epoch')
-    plt.ylabel('Number of Hidden Neurons')
-
+    plt.xlabel('Number of Hidden Neurons')
+    plt.ylabel(' Time taken per epoch')
+    
     plt.show()
 
 if __name__ == '__main__':

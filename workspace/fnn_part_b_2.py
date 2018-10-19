@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from timeit import default_timer as timer
 import multiprocessing as mp
 
-def evaluate_fnn_param():
+def evaluate_fnn_param(param):
 
     #============================== PROJECT PARAM STARTS HERE ===============================
 
@@ -19,13 +19,13 @@ def evaluate_fnn_param():
     NUM_FEATURES = 8
 
     #network parameters - these are the parameters we need to plot for the project
-    hidden_neurons = 30
+    hidden_neurons = param
     decay = 0.001
     batch_size = 32
 
     #training parameters
     learning_rate = 0.0000001
-    epochs = 100
+    epochs = 1000
     ratio = 0.7
 
     #randomness initialization
@@ -72,7 +72,6 @@ def evaluate_fnn_param():
     #trainX = (trainX - np.mean(trainX, axis=0))/ np.std(trainX, axis=0)
     #trainY = (trainX - np.mean(trainX, axis=0))/ np.std(trainX, axis=0)
 
-
     #============================== DATA PROCESSING ENDS HERE ====================================
 
     # ========================== TENSORFLOW TRAINING SHIT STARTS HERE =================================================
@@ -116,86 +115,94 @@ def evaluate_fnn_param():
     # ========================== TENSORFLOW STATISTIC OPERATIONS STARTS HERE ========================================
     #linear output is mean square error
     error = tf.reduce_mean(tf.square(y_ - y))
-    sampled_output = tf.squeeze(y)
     # ========================== TENSORFLOW STATISTIC OEPRATIONS END HERE ===========================================
 
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
+        n = trainX.shape[0]
+        indexes = np.arange(n)
+
         #timer vars
         time_taken = 0
         total_time_taken = 0
 
-        test_indexes = np.random.choice(range(testY.shape[0]),5,False)
+        fold_training_err = []
+        fold_testing_err = []
+        test_set_err = []
 
-        training_err = []
-        testing_err = []
+        folds = 5
+        fold_partition_size = n//5
 
-        n = trainX.shape[0]
-        indexes = np.arange(n)
+        for fold in range(folds)
 
-        for i in range(epochs):
+            fold_start = fold * fold_partition_size
+            fold_end = (fold+1) * fold_partition_size
 
-            np.random.shuffle(indexes)
+            fold_test_X = trainX[fold_start:fold_end]
+            fold_test_Y = trainY[fold_start:fold_end]
+            fold_train_X = np.append(trainX[:start],trainX[end:], axis=0)
+            fold_train_Y = np.append(trainX[:start],trainX[end:], axis=0)
 
-            randomized_X = trainX[indexes]
-            randomized_Y = trainY[indexes]
+            for i in range(epochs):
 
-            start_time = timer()
+                n = trainX.shape[0]
+            
+                np.random.shuffle(indexes)
 
-            for start, end in zip(range(0, n+1, batch_size), range(batch_size, n+1, batch_size)):
-                #remember i said we had endpoints? 1 was to feed the computational graph. the other was to access the computed outputs for target learning
-                #also note: np arrays take from start to end - 1, so no worries of overlap
-                #train_op.run(feed_dict={x: randomized_X[start:end], y_: randomized_Y[start:end], beta: decay})
-                train_op.run(feed_dict={x: trainX[start:end], y_: trainY[start:end], beta: decay})
+                randomized_X = fold_train_X[indexes]
+                randomized_Y = fold_train_Y[indexes]
 
-            end_time = timer()
-            time_taken = time_taken + (end_time-start_time)
-            total_time_taken = total_time_taken + (end_time-start_time)
+                start_time = timer()
+
+                for start, end in zip(range(0, n+1, batch_size), range(batch_size, n+1, batch_size)):
+                    #remember i said we had endpoints? 1 was to feed the computational graph. the other was to access the computed outputs for target learning
+                    #also note: np arrays take from start to end - 1, so no worries of overlap
+                    #train_op.run(feed_dict={x: randomized_X[start:end], y_: randomized_Y[start:end], beta: decay})
+                    train_op.run(feed_dict={x: trainX[start:end], y_: trainY[start:end], beta: decay})
+
+                end_time = timer()
+                time_taken = time_taken + (end_time-start_time)
+                total_time_taken = total_time_taken + (end_time-start_time)
 
 
-            train_err = error.eval(feed_dict={x: trainX, y_: trainY, beta: decay})
-            training_err.append(train_err)
+                train_err = error.eval(feed_dict={x: trainX, y_: trainY, beta: decay})
+                training_err.append(err)
 
-            test_err = error.eval(feed_dict={x: testX, y_: testY, beta: decay})
-            testing_err.append(test_err)
+                test_err = error.eval(feed_dict={x: testX, y_: testY, beta: decay})
+                testing_err.append(test_err)
 
-            if i % 100 == 0:
-                print('iter %d: test error %g'%(i, training_err[i]))
-
-        outputs = sampled_output.eval(feed_dict={x: testX[test_indexes], y_: testY[test_indexes], beta: decay})
-        targets = testY[test_indexes]
+                if i % 100 == 0:
+                    print('iter %d: test error %g'%(i, train_err[i]))
 
     print("Total Time Taken: {}".format(total_time_taken))
 
-    return (training_err,testing_err,outputs,targets)
+    return (training_err,testing_err)
 
 def main():
 
-    epochs = 100
-    samples = 5
+    no_threads = mp.cpu_count()
 
-    result = evaluate_fnn_param()
+    epochs = 1000
+    hidden = [30]
+
+    params = hidden
+    p = mp.Pool(processes = no_threads)
+    results = p.map(evaluate_fnn_param, params)
     
     #params = ["Train Error: {}".format(i) for i in params]
 
-    print((result[1]))
+    train_err = []
+
+    for result in results:
+    	train_err.append(result)
 
     plt.figure(1)
-    plt.plot(range(epochs), result[1])
+    plt.plot(range(epochs), train_err[0])
     plt.xlabel(str(epochs) + ' iterations')
     plt.ylabel('Train Error')
-
-    print(result[2])
-    print(result[3])
-
-    plt.figure(2)
-    plt.plot(range(samples), result[3], 'bo')
-    plt.plot(range(samples), result[2], 'ro')
-    plt.xlabel(str(samples) + ' Outputs')
-    plt.ylabel(str(samples) + ' Targets')
-    plt.legend(['Predicted','Actual'])
+    plt.legend(['outputs','targets'])
     plt.show()
 
 

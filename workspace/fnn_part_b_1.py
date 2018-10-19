@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from timeit import default_timer as timer
 import multiprocessing as mp
 
-def evaluate_fnn_param():
+def evaluate_fnn_param(params):
 
     #============================== PROJECT PARAM STARTS HERE ===============================
 
@@ -25,7 +25,7 @@ def evaluate_fnn_param():
 
     #training parameters
     learning_rate = 0.0000001
-    epochs = 100
+    epochs = params
     ratio = 0.7
 
     #randomness initialization
@@ -53,7 +53,7 @@ def evaluate_fnn_param():
 
     #normalize using mean and sd
     X_data = (X_data - np.mean(X_data, axis=0))/ np.std(X_data, axis=0)
-    Y_data = (Y_data - np.mean(Y_data, axis=0))/ np.std(Y_data, axis=0)
+    #Y_data = (Y_data - np.mean(Y_data, axis=0))/ np.std(Y_data, axis=0)
 
     #get the indexes as a list
     idx = np.arange(X_data.shape[0])
@@ -103,6 +103,10 @@ def evaluate_fnn_param():
     #reduce_sum with axis = 1 sums all elements in each pattern, then reduce the dimension by 1
     #meaning this becomes a rank 1 tensor, a vector of 1 element
     #reduce_mean will reduce it to a scalar and since there is only 1 element, there is no change 
+    #ALWAYS REMEMBER, REDUCE WORKS WITH EACH AXIS'S ELEMENTS. SO WHAT YOU DO IS FROM THE OUTERMOST ELEMENT, ACCESS THE INNER ELEMENT 
+    #SO FOR AXIS 0 IT TENSOR-SUMS EACH ELEMENT IN AXIS 0
+    #FOR AXIS 1 IT TENSOR-SUMS EACH ELEMENT IN AXIS 
+    #this whole op returns the sum as 
     loss = tf.reduce_mean(tf.reduce_sum(tf.square(y_ - y) + beta*regularization, axis=1))
 
     global_step = tf.Variable(0, name='global_step', trainable=False)
@@ -111,6 +115,7 @@ def evaluate_fnn_param():
     #~~~~~~~~~~~~~~~~~~~ end of learning section ~~~~~~~~~~~~~~~~~~~~~~~
 
     # ========================== TENSORFLOW TRAINING SHIT ENDS HERE =================================================
+
 
 
     # ========================== TENSORFLOW STATISTIC OPERATIONS STARTS HERE ========================================
@@ -176,19 +181,14 @@ def main():
     epochs = 100
     samples = 5
 
-    result = evaluate_fnn_param()
+    result = evaluate_fnn_param(epochs)
     
     #params = ["Train Error: {}".format(i) for i in params]
-
-    print((result[1]))
 
     plt.figure(1)
     plt.plot(range(epochs), result[1])
     plt.xlabel(str(epochs) + ' iterations')
     plt.ylabel('Train Error')
-
-    print(result[2])
-    print(result[3])
 
     plt.figure(2)
     plt.plot(range(samples), result[3], 'bo')

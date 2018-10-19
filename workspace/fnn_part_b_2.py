@@ -19,12 +19,12 @@ def evaluate_fnn_param(param):
     NUM_FEATURES = 8
 
     #network parameters - these are the parameters we need to plot for the project
-    hidden_neurons = param
+    hidden_neurons = 30
     decay = 0.001
     batch_size = 32
 
     #training parameters
-    learning_rate = 0.0000001
+    learning_rate = param
     epochs = 1000
     ratio = 0.7
 
@@ -53,7 +53,7 @@ def evaluate_fnn_param(param):
 
     #normalize using mean and sd
     X_data = (X_data - np.mean(X_data, axis=0))/ np.std(X_data, axis=0)
-    Y_data = (Y_data - np.mean(Y_data, axis=0))/ np.std(Y_data, axis=0)
+    #Y_data = (Y_data - np.mean(Y_data, axis=0))/ np.std(Y_data, axis=0)
 
     #get the indexes as a list
     idx = np.arange(X_data.shape[0])
@@ -71,6 +71,7 @@ def evaluate_fnn_param(param):
     #normalize inputs by using standard normal distribuition
     #trainX = (trainX - np.mean(trainX, axis=0))/ np.std(trainX, axis=0)
     #trainY = (trainX - np.mean(trainX, axis=0))/ np.std(trainX, axis=0)
+
 
     #============================== DATA PROCESSING ENDS HERE ====================================
 
@@ -102,6 +103,10 @@ def evaluate_fnn_param(param):
     #reduce_sum with axis = 1 sums all elements in each pattern, then reduce the dimension by 1
     #meaning this becomes a rank 1 tensor, a vector of 1 element
     #reduce_mean will reduce it to a scalar and since there is only 1 element, there is no change 
+    #ALWAYS REMEMBER, REDUCE WORKS WITH EACH AXIS'S ELEMENTS. SO WHAT YOU DO IS FROM THE OUTERMOST ELEMENT, ACCESS THE INNER ELEMENT 
+    #SO FOR AXIS 0 IT TENSOR-SUMS EACH ELEMENT IN AXIS 0
+    #FOR AXIS 1 IT TENSOR-SUMS EACH ELEMENT IN AXIS 
+    #this whole op returns the sum as 
     loss = tf.reduce_mean(tf.reduce_sum(tf.square(y_ - y) + beta*regularization, axis=1))
 
     global_step = tf.Variable(0, name='global_step', trainable=False)
@@ -110,6 +115,7 @@ def evaluate_fnn_param(param):
     #~~~~~~~~~~~~~~~~~~~ end of learning section ~~~~~~~~~~~~~~~~~~~~~~~
 
     # ========================== TENSORFLOW TRAINING SHIT ENDS HERE =================================================
+
 
 
     # ========================== TENSORFLOW STATISTIC OPERATIONS STARTS HERE ========================================
@@ -128,14 +134,14 @@ def evaluate_fnn_param(param):
         time_taken = 0
         total_time_taken = 0
 
-        fold_training_err = []
-        fold_testing_err = []
-        test_set_err = []
 
         folds = 5
         fold_partition_size = n//5
 
-        for fold in range(folds)
+        fold_training_err = []
+        test_errors = []
+
+        for fold in range(folds):
 
             fold_start = fold * fold_partition_size
             fold_end = (fold+1) * fold_partition_size
@@ -145,7 +151,7 @@ def evaluate_fnn_param(param):
             fold_train_X = np.append(trainX[:start],trainX[end:], axis=0)
             fold_train_Y = np.append(trainX[:start],trainX[end:], axis=0)
 
-            for i in range(epochs):
+            for i in range(epochs//fold_partition_size):
 
                 n = trainX.shape[0]
             
@@ -160,25 +166,26 @@ def evaluate_fnn_param(param):
                     #remember i said we had endpoints? 1 was to feed the computational graph. the other was to access the computed outputs for target learning
                     #also note: np arrays take from start to end - 1, so no worries of overlap
                     #train_op.run(feed_dict={x: randomized_X[start:end], y_: randomized_Y[start:end], beta: decay})
-                    train_op.run(feed_dict={x: trainX[start:end], y_: trainY[start:end], beta: decay})
+                    train_op.run(feed_dict={x: randomized_X[start:end], y_: randomized_Y[start:end], beta: decay})
 
                 end_time = timer()
                 time_taken = time_taken + (end_time-start_time)
                 total_time_taken = total_time_taken + (end_time-start_time)
 
-
-                train_err = error.eval(feed_dict={x: trainX, y_: trainY, beta: decay})
-                training_err.append(err)
-
-                test_err = error.eval(feed_dict={x: testX, y_: testY, beta: decay})
-                testing_err.append(test_err)
-
                 if i % 100 == 0:
-                    print('iter %d: test error %g'%(i, train_err[i]))
+                    print('fold: %d iter %d: test error %g'%(fold, i, train_err[i]))
+
+                test_error = error.eval(feed_dict={x: fold_test_X, y_: fold_test_Y, beta: decay})
+
+            fold_err = error.eval(feed_dict={x: testX, y_: testY, beta: decay})
+            fold_training_err.append(fold_err)
+
+    #cv error
+    average_test_error = np.mean(fold_training_err)
 
     print("Total Time Taken: {}".format(total_time_taken))
 
-    return (training_err,testing_err)
+    return (learning_rate,average_test_error,)
 
 def main():
 

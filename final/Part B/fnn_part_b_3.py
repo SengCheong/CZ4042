@@ -24,7 +24,7 @@ def evaluate_fnn_param(param):
     batch_size = 32
 
     #training parameters
-    learning_rate = 0.5*10**-6
+    learning_rate = 0.5*10**-8
     epochs = 1000
     ratio = 0.7
 
@@ -89,16 +89,8 @@ def evaluate_fnn_param(param):
 
     #~~~~~~~~~~~~~~~~~~~ learning section ~~~~~~~~~~~~~~~~~~~~~~~
     regularization = tf.nn.l2_loss(weights_h1) + tf.nn.l2_loss(weights_o) 
-    #returns sse
-    #given that y_-y returns a rank 2 tensor e.g batch size * 1 
-    #reduce_sum with axis = 1 sums all elements in each pattern, then reduce the dimension by 1
-    #meaning this becomes a rank 1 tensor, a vector of 1 element
-    #reduce_mean will reduce it to a scalar and since there is only 1 element, there is no change 
-    #ALWAYS REMEMBER, REDUCE WORKS WITH EACH AXIS'S ELEMENTS. SO WHAT YOU DO IS FROM THE OUTERMOST ELEMENT, ACCESS THE INNER ELEMENT 
-    #SO FOR AXIS 0 IT TENSOR-SUMS EACH ELEMENT IN AXIS 0
-    #FOR AXIS 1 IT TENSOR-SUMS EACH ELEMENT IN AXIS 
-    #this whole op returns the sum as 
-    loss = tf.reduce_mean(tf.reduce_sum(tf.square(y_ - y) + beta*regularization, axis=1))
+    #obtain the loss from cost junction with regularization
+    loss =  tf.reduce_mean(tf.square(y_ - y)) + beta*regularization # sum of the squares
 
     global_step = tf.Variable(0, name='global_step', trainable=False)
     optimizer = tf.train.GradientDescentOptimizer(learning_rate)

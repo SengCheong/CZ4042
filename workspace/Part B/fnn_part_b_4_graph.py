@@ -64,14 +64,14 @@ def main():
 
     plt.figure(4)
     for layer, batch_time in zip([p[0] for p in params],batch_time):
-        plt.plot(layer,epoch_time ,'o')
+        plt.plot(layer,batch_time ,'o')
     plt.xlabel('Layers')
     plt.ylabel('Batch Time')
     plt.legend(params)
 
     plt.figure(5)
     for layer, total_time in zip([p[0] for p in params],total_time):
-        plt.plot(layer,epoch_time ,'o')
+        plt.plot(layer,total_time ,'o')
     plt.xlabel('Layers')
     plt.ylabel('Total Training Time')
     plt.legend(params)

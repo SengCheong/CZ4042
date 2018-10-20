@@ -25,7 +25,6 @@ def evaluate_fnn_param(param):
 
     #training parameters
     learning_rate = param
-    epochs = 1000
     ratio = 0.7
 
     #randomness initialization
@@ -103,7 +102,8 @@ def evaluate_fnn_param(param):
 
     # ========================== TENSORFLOW STATISTIC OPERATIONS STARTS HERE ========================================
     #linear output is mean square error
-    error = tf.reduce_mean(tf.square(y_ - y))
+    #error = tf.reduce_mean(tf.square(y_ - y))
+    error = tf.reduce_sum(tf.square(y_-y)) / (2 * trainX.shape[0])
     # ========================== TENSORFLOW STATISTIC OEPRATIONS END HERE ===========================================
 
 
@@ -132,7 +132,7 @@ def evaluate_fnn_param(param):
             fold_train_X = np.append(trainX[:fold_start],trainX[fold_end:], axis=0)
             fold_train_Y = np.append(trainY[:fold_start],trainY[fold_end:], axis=0)
 
-            for i in range(epochs//folds):
+            for i in range(epochs):
 
                 m = fold_train_X.shape[0]
                 indexes = np.arange(m)

@@ -156,6 +156,8 @@ def evaluate_fnn_param(param):
                 if i % 100 == 0:
                     print('param: %g fold: %d iter %d: epoch error %g'%(param, fold, i, fold_epoch_errors[i]))
 
+                print('param: %g fold: %d iter %d: epoch error %g'%(param, fold, i, fold_epoch_errors[i]))
+
             fold_err = error.eval(feed_dict={x: fold_test_X, y_: fold_test_Y, beta: decay})
             fold_errs.append(fold_err)
 
@@ -200,6 +202,9 @@ def main():
     plt.ylabel('Mean Square Error with Test Dataset')
     plt.legend(params)
     
+
+    
+
     plt.show()
 
 

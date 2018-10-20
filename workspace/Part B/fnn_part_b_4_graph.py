@@ -1,20 +1,23 @@
-from .fnn_part_b_4_L3 import evaluate_fnn_param as L3
-from .fnn_part_b_4_L3N import evaluate_fnn_param as L3N
-from .fnn_part_b_4_L4 import evaluate_fnn_param as L4
-from .fnn_part_b_4_L4N import evaluate_fnn_param as L4N
-from .fnn_part_b_4_L5 import evaluate_fnn_param as L5
-from .fnn_part_b_4_L5N import evaluate_fnn_param as L5N
+from fnn_part_b_4_L3 import evaluate_fnn_param as L3
+from fnn_part_b_4_L3N import evaluate_fnn_param as L3N
+from fnn_part_b_4_L4 import evaluate_fnn_param as L4
+from fnn_part_b_4_L4N import evaluate_fnn_param as L4N
+from fnn_part_b_4_L5 import evaluate_fnn_param as L5
+from fnn_part_b_4_L5N import evaluate_fnn_param as L5N
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 
 
-def worker_thread(layer,dropout):
+def worker_thread(param):
+
+    layer, dropout = param
 
     if dropout:
-        result = eval("L{}()".format())
+        result = eval("L{}()".format(layer))
     else:
-        result = eval("L{}N()".format())
+        result = eval("L{}N()".format(layer))
 
+    return result
 
 epochs = 1000
 

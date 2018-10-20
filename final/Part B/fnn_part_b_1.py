@@ -111,11 +111,6 @@ def evaluate_fnn_param(params):
     #the tensor shape at before meaning is matris with batch size * 1
     #the tensor shape at after meaning is a vector of 1 element. eval will turn it into a scalar
     error = tf.reduce_mean(tf.square(y_ - y))
-
-    summed = tf.reduce_sum(tf.square(y_ - y))
-
-    squared = tf.Print(summed,[summed, tf.shape(tf.square(y_-y))],"Summed")
-    meaned = tf.Print(error,[error],"Meaned")
     #the tensor shape at after 
 
     #sampled_output is for retreiving the outputs for 50 samples, squeeze here compress the outputs from a matrix into vector
@@ -153,10 +148,6 @@ def evaluate_fnn_param(params):
             end_time = timer()
             time_taken = time_taken + (end_time-start_time)
             total_time_taken = total_time_taken + (end_time-start_time)
-
-            print("BREAK")
-            print(squared.eval(feed_dict={x: trainX, y_: trainY, beta: decay}))
-            print(meaned.eval(feed_dict={x: trainX, y_: trainY, beta: decay}))
 
             train_err = error.eval(feed_dict={x: trainX, y_: trainY, beta: decay})
             training_err.append(train_err)

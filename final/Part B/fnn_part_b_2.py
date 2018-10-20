@@ -164,12 +164,12 @@ def evaluate_fnn_param(param):
                 if i % 100 == 0:
                     print('param: %g fold: %d iter %d: test error %g'%(param, fold, i, test_set_errors[i]))
 
-            fold_err = error.eval(feed_dict={x: testX, y_: testY, beta: decay})
+            fold_err = error.eval(feed_dict={x: fold_test_X, y_: fold_test_Y, beta: decay})
             fold_errs.append(fold_err)
 
     #cv error
     fold_training_err = np.array(fold_errs)
-    average_test_error = np.mean(fold_err)
+    average_test_error = np.mean(fold_training_err)
 
     print("Total Time Taken: {}".format(total_time_taken))
 

@@ -25,7 +25,7 @@ batch_size = 32
 
 #training parameters
 learning_rate = 0.0000001
-epochs = 10
+epochs = 1000
 
 #randomness initialization
 seed = 10
@@ -93,10 +93,7 @@ def evaluate_fnn_param(params):
 
     #~~~~~~~~~~~~~~~~~~~ learning section ~~~~~~~~~~~~~~~~~~~~~~~
     regularization = tf.nn.l2_loss(weights_h1) + tf.nn.l2_loss(weights_o) 
-    #reduce_sum sums the square error for each pattern, effectively performing sum of square errors for batch gradient descent
-    #the tensor shape at before summing is matris with batch size * 1
-    #the tensor shape at after summing is a vector of 1 element
-    #reduce_mean reduces the tensor into a scalar 
+    #obtain the loss from cost junction with regularization, #reduce mean is for neuron layers
     loss = tf.reduce_mean(tf.reduce_sum(tf.square(y_ - y) + beta*regularization, axis=1))
 
     global_step = tf.Variable(0, name='global_step', trainable=False)
@@ -108,10 +105,8 @@ def evaluate_fnn_param(params):
 
     # ========================== TENSORFLOW STATISTIC OPERATIONS STARTS HERE ========================================
     #linear neuron error is mean square error.
-    #the tensor shape at before meaning is matris with batch size * 1
-    #the tensor shape at after meaning is a vector of 1 element. eval will turn it into a scalar
-    error = tf.reduce_mean(tf.square(y_ - y))
     #the tensor shape at after 
+    error = tf.reduce_mean(tf.square(y_ - y))
 
     #sampled_output is for retreiving the outputs for 50 samples, squeeze here compress the outputs from a matrix into vector
     sampled_output = tf.squeeze(y)
@@ -137,6 +132,7 @@ def evaluate_fnn_param(params):
 
             np.random.shuffle(indexes)
 
+            #shuffle the data
             randomized_X = trainX[indexes]
             randomized_Y = trainY[indexes]
 

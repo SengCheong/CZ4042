@@ -41,37 +41,28 @@ def evaluate_fnn_param(param):
     #extract the features and targets
     X_data, Y_data = cal_housing[:,:8], cal_housing[:,-1]
 
-    # ok so what is going on here is that there are N number of elements originally,  
-    # because of the way numpy arrays slice negative indexes, what's going is this
-    # cal_housing[:-1] returns an array of the elements taken from the 1st dimension. this means that it is an array of N elements.
-    # the tensor expects N by 1 number of elements i.e. 1D tensor or matrix. a 0D tensor is an array or 1-d vector, because it is N elements * kth neurons
-    # so we turn it into a matrix so it becomes a matrix of 1 by N elements
-    # you can ask, why didn't we do cal_housing[:,-2:-1] cause bitch the numpy is fked. if i is starting index and j is ending index then numpy computes it as n - i and n -j
-    # so what happens if we got a 5 by 5 and do [:,-2:-1] it will return all 5 rows, and the columns of (5-2)th index to give a 5 by 1 matrix
-    # then you ask, if this is the case then we can't we do [:,-1,0] cause 0 is not negative, so it goes to the start. so how the hell you expect np to iterate from -1 to 0 in a forward manner
+    #transpose the matrix because of np reading oddity
     Y_data = (np.asmatrix(Y_data)).transpose()
 
     #normalize using mean and sd
-    X_data = (X_data - np.mean(X_data, axis=0))/ np.std(X_data, axis=0)
+    #X_data = (X_data - np.mean(X_data, axis=0))/ np.std(X_data, axis=0)
     #Y_data = (Y_data - np.mean(Y_data, axis=0))/ np.std(Y_data, axis=0)
-
+    
     #get the indexes as a list
     idx = np.arange(X_data.shape[0])
     #shuffle the list
     np.random.shuffle(idx)
-    #update the dataset
+    #randomize the dataset
     X_data, Y_data = X_data[idx], Y_data[idx]
 
-    #he split his data here into test and training sets
+    #we split his data here into test and training sets
     partition = X_data.shape[0]//10
     m = partition * 7
     trainX, trainY = X_data[:m], Y_data[:m]
     testX, testY = X_data[m:], Y_data[m:]
 
-    #normalize inputs by using standard normal distribuition
-    #trainX = (trainX - np.mean(trainX, axis=0))/ np.std(trainX, axis=0)
-    #trainY = (trainX - np.mean(trainX, axis=0))/ np.std(trainX, axis=0)
-
+    trainX = (trainX - np.mean(trainX, axis=0))/ np.std(trainX, axis=0)
+    testX = (testX - np.mean(testX, axis=0))/ np.std(testX, axis=0)
 
     #============================== DATA PROCESSING ENDS HERE ====================================
 
@@ -127,7 +118,6 @@ def evaluate_fnn_param(param):
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
-        #total training/validation dataset ssize
         n = trainX.shape[0]
 
         #timer vars
@@ -137,8 +127,8 @@ def evaluate_fnn_param(param):
         folds = 5
         fold_partition_size = n//5
 
-        fold_training_err = []
-        test_set_errors = []
+        fold_errs = []
+        fold_epoch_errors = []
 
         for fold in range(folds):
 
@@ -162,27 +152,24 @@ def evaluate_fnn_param(param):
                 start_time = timer()
 
                 for start, end in zip(range(0, n+1, batch_size), range(batch_size, n+1, batch_size)):
-                    #remember i said we had endpoints? 1 was to feed the computational graph. the other was to access the computed outputs for target learning
-                    #also note: np arrays take from start to end - 1, so no worries of overlap
-                    #train_op.run(feed_dict={x: randomized_X[start:end], y_: randomized_Y[start:end], beta: decay})
                     train_op.run(feed_dict={x: randomized_X[start:end], y_: randomized_Y[start:end], beta: decay})
 
                 end_time = timer()
                 time_taken = time_taken + (end_time-start_time)
                 total_time_taken = total_time_taken + (end_time-start_time)
 
-                test_set_error = error.eval(feed_dict={x: testX, y_: testY, beta: decay})
-                test_set_errors.append(test_set_error)
+                fold_epoch_error = error.eval(feed_dict={x: fold_test_X, y_: fold_test_Y, beta: decay})
+                fold_epoch_error.append(fold_epoch_error)
 
                 if i % 100 == 0:
                     print('param: %g fold: %d iter %d: test error %g'%(param, fold, i, test_set_errors[i]))
 
-            fold_err = error.eval(feed_dict={x: fold_test_X, y_: fold_test_Y, beta: decay})
-            fold_training_err.append(fold_err)
+            fold_err = error.eval(feed_dict={x: testX, y_: testY, beta: decay})
+            fold_errs.append(fold_err)
 
     #cv error
-    fold_training_err = np.array(fold_training_err)
-    average_test_error = np.mean(fold_training_err)
+    fold_training_err = np.array(fold_errs)
+    average_test_error = np.mean(fold_err)
 
     print("Total Time Taken: {}".format(total_time_taken))
 

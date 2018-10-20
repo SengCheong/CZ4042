@@ -57,22 +57,22 @@ def main():
     plt.legend(params)
 
     plt.figure(3)
-    for layer, batch_time in zip([p[0] for p in params],epoch_time):
-        plt.plot(layer,epoch_time ,'o')
+    for layer, time in zip([p[0] for p in params],epoch_time):
+        plt.plot(layer, time ,'o')
     plt.xlabel('Layers')
     plt.ylabel('Epoch Time')
     plt.legend(params)
 
     plt.figure(4)
-    for layer, batch_time in zip([p[0] for p in params],batch_time):
-        plt.plot(layer,batch_time ,'o')
+    for layer, time in zip([p[0] for p in params],batch_time):
+        plt.plot(layer,time ,'o')
     plt.xlabel('Layers')
     plt.ylabel('Batch Time')
     plt.legend(params)
 
     plt.figure(5)
-    for layer, total_time in zip([p[0] for p in params],total_time):
-        plt.plot(layer,total_time ,'o')
+    for layer, time in zip([p[0] for p in params],total_time):
+        plt.plot(layer,time ,'o')
     plt.xlabel('Layers')
     plt.ylabel('Total Training Time')
     plt.legend(params)

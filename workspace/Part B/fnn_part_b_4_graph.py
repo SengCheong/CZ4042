@@ -29,13 +29,13 @@ def main():
     results = p.map(worker_thread, params)
 
     test_accs = []
-    training_accuracy = []
+    training_accs = []
     epoch_time = []
     batch_time = []
     legend = ["{} Layer Network, Dropouts".format(p[0]) if p[1] else "{} Layer Network, No Dropouts".format(p[0]) for p in params]
 
     for i, result in enumerate(results):
-        training_accuracy.append(result[0])
+        training_accs.append(result[0])
         test_accs.append(result[1])
         epoch_time.append(result[2])
         batch_time.append(result[3])

@@ -32,7 +32,7 @@ def main():
     training_accuracy = []
     epoch_time = []
     batch_time = []
-    legend = ["{} Layer Network".format(p[0]) if p[1] else "{} Layer Network, No Dropouts".format(p[0]) for p in params]
+    legend = ["{} Layer Network, Dropouts".format(p[0]) if p[1] else "{} Layer Network, No Dropouts".format(p[0]) for p in params]
 
     for i, result in enumerate(results):
         test_accs.append(result[0])
@@ -44,14 +44,14 @@ def main():
     for acc in test_accs:
         plt.plot(range(epochs), acc)
     plt.xlabel(str(epochs) + ' iterations')
-    plt.ylabel('Accuracy against Test Data')
+    plt.ylabel('Test Data Error')
     plt.legend(params)
 
     plt.figure(2)
     for acc in test_accs:
         plt.plot(range(epochs), acc)
     plt.xlabel(str(epochs) + ' iterations')
-    plt.ylabel('Accuracy against Training Data')
+    plt.ylabel('Training Data Error')
     plt.legend(params)
 
 

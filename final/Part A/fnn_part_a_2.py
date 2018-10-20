@@ -33,6 +33,7 @@ def scale(X, X_min, X_max):
 def evaluate_fnn_param(param):
 
     #============================== EVALUATED PARAMETER STARTS HERE ===================================
+    batch_size = param
     #============================== EVALUATED PARAMETER ENDS HERE ===================================
 
     #============================== DATA PROCESSING STARTS HERE ====================================
@@ -116,7 +117,7 @@ def evaluate_fnn_param(param):
     train_op = optimizer.minimize(loss, global_step=global_step)
     # ~~~~~~~~~~~~~~~~~ end of learning section ~~~~~~~~~~~~~~~~~~~
 
-    # ========================== TENSORFLOW TRAINING SHIT ENDS HERE =================================================
+    # ========================== TENSORFLOW TRAINING ENDS HERE =================================================
 
     # ========================== TENSORFLOW STATISTIC OPERATIONS STARTS HERE ========================================
  
@@ -163,7 +164,7 @@ def evaluate_fnn_param(param):
             time_taken = time_taken + (end_time-start_time)
             total_time_taken = total_time_taken + (end_time-start_time)
 
-            #optimize 
+            #test 
             test_acc.append(accuracy.eval(feed_dict={x: testX, y_: testY, beta: decay}))
             test_log.append(loss.eval(feed_dict={x: testX, y_: testY, beta: decay}))
             train_classification.append(classification_errors.eval(feed_dict={x: trainX, y_: trainY, beta: decay}))
@@ -203,11 +204,6 @@ def main():
         train_classifications.append(result[3])
         train_logs.append(result[4])
         time_taken.append(result[5])
-        np.savetxt("batchsize_{}_testacc.txt".format(result[0]),[result[1]],delimiter=",")
-        np.savetxt("batchsize_{}_testlog.txt".format(result[0]),[result[2]],delimiter=",")
-        np.savetxt("batchsize_{}_trainclass.txt".format(result[0]),[result[3]],delimiter=",")
-        np.savetxt("batchsize_{}_trainlog.txt".format(result[0]),[result[4]],delimiter=",")
-        np.savetxt("batchsize_{}_timetaken.txt".format(result[0]),[result[5]],delimiter=",")
 
     plt.figure(1)
     for acc in test_accs:

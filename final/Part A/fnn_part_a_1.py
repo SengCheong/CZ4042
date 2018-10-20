@@ -35,12 +35,10 @@ def evaluate_fnn_param(param):
 
 
     #============================== DATA PROCESSING STARTS HERE ====================================
-    #read training data, space delimited.
     train_input = np.loadtxt('sat_train.txt',delimiter=' ')
 
-    # grab training date
+    #separate targets and training data
     trainX = train_input[:,:36]
-    # grab training targets
     train_Y = train_input[:,-1].astype(int)
 
     #normalize the inputs
@@ -54,7 +52,6 @@ def evaluate_fnn_param(param):
 
     #activate 1-hot values
     trainY[np.arange(train_Y.shape[0]), train_Y-1] = 1 
-
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TEST DATA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -115,7 +112,7 @@ def evaluate_fnn_param(param):
     train_op = optimizer.minimize(loss, global_step=global_step)
     # ~~~~~~~~~~~~~~~~~ end of learning section ~~~~~~~~~~~~~~~~~~~
 
-    # ========================== TENSORFLOW TRAINING SHIT ENDS HERE =================================================
+    # ========================== TENSORFLOW TRAINING ENDS HERE =================================================
 
     # ========================== TENSORFLOW STATISTIC OPERATIONS STARTS HERE ========================================
  
@@ -162,7 +159,7 @@ def evaluate_fnn_param(param):
             time_taken = time_taken + (end_time-start_time)
             total_time_taken = total_time_taken + (end_time-start_time)
 
-            #optimize 
+            #tests 
             test_acc.append(accuracy.eval(feed_dict={x: testX, y_: testY, beta: decay}))
             test_log.append(loss.eval(feed_dict={x: testX, y_: testY, beta: decay}))
             train_classification.append(classification_errors.eval(feed_dict={x: trainX, y_: trainY, beta: decay}))

@@ -51,15 +51,20 @@ def main():
     for acc in test_accs:
         plt.plot(range(epochs), acc)
     plt.xlabel(str(epochs) + ' iterations')
-    plt.ylabel('Accuracy against Test Data')
+    plt.ylabel('Accuracy against Training Data')
     plt.legend(params)
 
+
     plt.figure(3)
+    for layer, epoch_time in zip([p[0] for p in params],epoch_time):
+        plt.plot(layer,epoch_time ,'o')
     plt.xlabel(str(epochs) + ' iterations')
-    plt.ylabel('Epoch Time')
+    plt.ylabel('Layers')
     plt.legend(params)
 
     plt.figure(4)
+    for layer, epoch_time in zip([p[0] for p in params],batch_time):
+        plt.plot(layer,epoch_time ,'o')
     plt.xlabel(str(epochs) + ' iterations')
     plt.ylabel('Batch Time')
     plt.legend(params)

@@ -24,18 +24,21 @@ def main():
 
     no_threads = mp.cpu_count()
 
-    params = [(3, True), (3, False), (4, True), (4, False), (5, True)]
+    params = [(3, True), (3, False), (4, True), (4, False), (5, True),(5,False)]
     p = mp.Pool(processes=no_threads)
     results = p.map(worker_thread, params)
 
     test_accs = []
     training_accuracy = []
+    epoch_time = []
+    batch_time = []
     legend = ["{} Layer Network".format(p[0]) if p[1] else "{} Layer Network, No Dropouts".format(p[0]) for p in params]
 
     for i, result in enumerate(results):
-        print("Result: {} - {}".format(i, result[2]))
         test_accs.append(result[0])
         training_accuracy.append(result[1])
+        epoch_time = [result[2]]
+        batch_time = [result[3]]
 
     plt.figure(1)
     for acc in test_accs:
@@ -49,6 +52,16 @@ def main():
         plt.plot(range(epochs), acc)
     plt.xlabel(str(epochs) + ' iterations')
     plt.ylabel('Accuracy against Test Data')
+    plt.legend(params)
+
+    plt.figure(3)
+    plt.xlabel(str(epochs) + ' iterations')
+    plt.ylabel('Epoch Time')
+    plt.legend(params)
+
+    plt.figure(4)
+    plt.xlabel(str(epochs) + ' iterations')
+    plt.ylabel('Batch Time')
     plt.legend(params)
 
     plt.show()

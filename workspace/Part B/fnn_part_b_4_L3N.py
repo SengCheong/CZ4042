@@ -105,7 +105,6 @@ def evaluate_fnn_param(params, first_layer_neurons):
     # ========================== TENSORFLOW STATISTIC OPERATIONS STARTS HERE ========================================
     #linear output is mean square error
     error = tf.reduce_mean(tf.square(y_ - y))
-    sampled_output = tf.squeeze(y)
     # ========================== TENSORFLOW STATISTIC OEPRATIONS END HERE ===========================================
 
 
@@ -151,8 +150,8 @@ def evaluate_fnn_param(params, first_layer_neurons):
                 print('iter %d: test error %g'%(i, training_err[i]))
 
     print("Total Time Taken: {}".format(total_time_taken))
-
-    return (training_err,testing_err,False)
+    batch_time = (total_time_taken/epochs)/(n/batch_size)
+    return (training_err,testing_err,total_time_taken/epochs,batch_time)
     
 def main():
 

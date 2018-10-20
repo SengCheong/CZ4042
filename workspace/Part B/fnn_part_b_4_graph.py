@@ -37,8 +37,8 @@ def main():
     for i, result in enumerate(results):
         test_accs.append(result[0])
         training_accuracy.append(result[1])
-        epoch_time = [result[2]]
-        batch_time = [result[3]]
+        epoch_time.append(result[2])
+        batch_time.append(result[3])
 
     plt.figure(1)
     for acc in test_accs:

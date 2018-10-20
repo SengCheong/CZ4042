@@ -207,13 +207,10 @@ def main():
         cv_errors.append(result[1])
         test_errors.append(result[2])
 
-    print(learning_rates)
-    print(cv_errors)
-
     plt.figure(1)
-    for rate,cv in zip(learning_rates,cv_errors):
+    for rate,cv in zip(hidden,cv_errors):
         plt.plot(rate, cv, 'o')
-    plt.xlabel('Learning Rate')
+    plt.xlabel('Hidden Neurons')
     plt.ylabel('Cross Validation Error')
     plt.legend(params)
 

@@ -175,11 +175,11 @@ def evaluate_fnn_param(params, first_layer_neurons):
     
 def main():
 
-    epochs = 100
+    epochs = 1000
 
     result = evaluate_fnn_param(epochs)
     
-    #params = ["Train Error: {}".format(i) for i in params]
+    params = ["Train Error: {}".format(i) for i in params]
 
     plt.figure(1)
     plt.plot(range(epochs), result[1])

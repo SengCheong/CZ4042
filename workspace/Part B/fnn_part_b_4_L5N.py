@@ -177,7 +177,6 @@ def main():
 
     result = evaluate_fnn_param(epochs)
 
-
     plt.figure(1)
     plt.plot(range(epochs), result[1])
     plt.xlabel(str(epochs) + ' iterations')

@@ -93,7 +93,7 @@ def evaluate_fnn_param(params, first_layer_neurons):
     weights_h2 = tf.Variable(tf.truncated_normal([first_neurons, hidden_neurons],stddev=1.0 / np.sqrt(float(NUM_FEATURES))),name='weights')
     biases_h2 = tf.Variable(tf.zeros([hidden_neurons]),name='biases')
     hidden_2 = tf.nn.relu(tf.matmul(h1_dropout, weights_h2) + biases_h2)
-    h2_dropout = tf.nn.dropout(h1_dropout, keep_prob)
+    h2_dropout = tf.nn.dropout(hidden_2, keep_prob)
     # ~~~~~~~~~~~~~~~~~~ end of hidden layer ~~~~~~~~~~~~~~~~~~~~~~~
 
     # ~~~~~~~~~~~~~~~~~~ output layer ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -172,7 +172,7 @@ def main():
 
     result = evaluate_fnn_param(epochs)
     
-    #params = ["Train Error: {}".format(i) for i in params]
+    params = ["Train Error: {}".format(i) for i in params]
 
     plt.figure(1)
     plt.plot(range(epochs), result[1])

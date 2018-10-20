@@ -32,6 +32,7 @@ def main():
     training_accs = []
     epoch_time = []
     batch_time = []
+    total_time = []
     legend = ["{} Layer Network, Dropouts".format(p[0]) if p[1] else "{} Layer Network, No Dropouts".format(p[0]) for p in params]
 
     for i, result in enumerate(results):

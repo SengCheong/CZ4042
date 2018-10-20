@@ -159,7 +159,7 @@ def evaluate_fnn_param(param):
                 total_time_taken = total_time_taken + (end_time-start_time)
 
                 fold_epoch_error = error.eval(feed_dict={x: fold_test_X, y_: fold_test_Y, beta: decay})
-                fold_epoch_error.append(fold_epoch_error)
+                fold_epoch_errors.append(fold_epoch_error)
 
                 if i % 100 == 0:
                     print('param: %g fold: %d iter %d: test error %g'%(param, fold, i, test_set_errors[i]))

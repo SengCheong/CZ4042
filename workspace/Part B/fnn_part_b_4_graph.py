@@ -39,6 +39,7 @@ def main():
         test_accs.append(result[1])
         epoch_time.append(result[2])
         batch_time.append(result[3])
+        total_time.append(result[4])
 
     plt.figure(1)
     for acc in test_accs:
@@ -55,18 +56,26 @@ def main():
     plt.legend(params)
 
     plt.figure(3)
-    for layer, epoch_time in zip([p[0] for p in params],epoch_time):
+    for layer, batch_time in zip([p[0] for p in params],epoch_time):
         plt.plot(layer,epoch_time ,'o')
-    plt.xlabel(str(epochs) + ' iterations')
-    plt.ylabel('Layers')
+    plt.xlabel('Layers')
+    plt.ylabel('Epoch Time')
     plt.legend(params)
 
     plt.figure(4)
-    for layer, epoch_time in zip([p[0] for p in params],batch_time):
+    for layer, batch_time in zip([p[0] for p in params],batch_time):
         plt.plot(layer,epoch_time ,'o')
-    plt.xlabel(str(epochs) + ' iterations')
+    plt.xlabel('Layers')
     plt.ylabel('Batch Time')
     plt.legend(params)
+
+    plt.figure(5)
+    for layer, total_time in zip([p[0] for p in params],total_time):
+        plt.plot(layer,epoch_time ,'o')
+    plt.xlabel('Layers')
+    plt.ylabel('Total Training Time')
+    plt.legend(params)
+
 
     plt.show()
 

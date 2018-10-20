@@ -171,7 +171,7 @@ def evaluate_fnn_param(params, first_layer_neurons):
 
     print("Total Time Taken: {}".format(total_time_taken))
     batch_time = (total_time_taken/epochs)/(n/batch_size)
-    return (training_err,testing_err,total_time_taken/epochs,batch_time)
+    return (training_err,testing_err,total_time_taken/epochs,batch_time,total_time_taken)
     
 def main():
 

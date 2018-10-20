@@ -46,29 +46,28 @@ def evaluate_fnn_param(params, first_layer_neurons):
     #extract the features and targets
     X_data, Y_data = cal_housing[:,:8], cal_housing[:,-1]
 
+    #transpose the matrix because of np reading oddity
     Y_data = (np.asmatrix(Y_data)).transpose()
 
     #normalize using mean and sd
-    X_data = (X_data - np.mean(X_data, axis=0))/ np.std(X_data, axis=0)
+    #X_data = (X_data - np.mean(X_data, axis=0))/ np.std(X_data, axis=0)
     #Y_data = (Y_data - np.mean(Y_data, axis=0))/ np.std(Y_data, axis=0)
-
+    
     #get the indexes as a list
     idx = np.arange(X_data.shape[0])
     #shuffle the list
     np.random.shuffle(idx)
-    #update the dataset
+    #randomize the dataset
     X_data, Y_data = X_data[idx], Y_data[idx]
 
-    #he split his data here into test and training sets
+    #we split his data here into test and training sets
     partition = X_data.shape[0]//10
     m = partition * 7
     trainX, trainY = X_data[:m], Y_data[:m]
     testX, testY = X_data[m:], Y_data[m:]
 
-    #normalize inputs by using standard normal distribuition
-    #trainX = (trainX - np.mean(trainX, axis=0))/ np.std(trainX, axis=0)
-    #trainY = (trainX - np.mean(trainX, axis=0))/ np.std(trainX, axis=0)
-
+    trainX = (trainX - np.mean(trainX, axis=0))/ np.std(trainX, axis=0)
+    testX = (testX - np.mean(testX, axis=0))/ np.std(testX, axis=0)
 
     #============================== DATA PROCESSING ENDS HERE ====================================
 

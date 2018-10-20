@@ -162,7 +162,7 @@ def main():
     #params = ["Train Error: {}".format(i) for i in params]
 
     plt.figure(1)
-    plt.plot(range(epochs), result[1])
+    plt.plot(range(epochs), result[0])
     plt.xlabel(str(epochs) + ' iterations')
     plt.ylabel('Training Error')
 

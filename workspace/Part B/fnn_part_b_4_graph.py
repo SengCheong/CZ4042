@@ -1,11 +1,9 @@
-from . import fnn_part_b_4_L3 as L3
-from . import fnn_part_b_4_L3N as L3N
-from . import fnn_part_b_4_L4 as L4
-from . import fnn_part_b_4_L4N as L4N
-from . import fnn_part_b_4_L5 as L5
-from . import fnn_part_b_4_L5N as L5N
-import tensorflow as tf
-import numpy as np
+from .fnn_part_b_4_L3 import evaluate_fnn_param as L3
+from .fnn_part_b_4_L3N import evaluate_fnn_param as L3N
+from .fnn_part_b_4_L4 import evaluate_fnn_param as L4
+from .fnn_part_b_4_L4N import evaluate_fnn_param as L4N
+from .fnn_part_b_4_L5 import evaluate_fnn_param as L5
+from .fnn_part_b_4_L5N import evaluate_fnn_param as L5N
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 

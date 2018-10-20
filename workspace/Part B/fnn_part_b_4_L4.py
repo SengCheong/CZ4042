@@ -11,6 +11,9 @@ import matplotlib.pyplot as plt
 from timeit import default_timer as timer
 import multiprocessing as mp
 
+if __name__ == '__main__':
+    main()
+
 def evaluate_fnn_param(params, first_layer_neurons):
 
     #============================== PROJECT PARAM STARTS HERE ===============================

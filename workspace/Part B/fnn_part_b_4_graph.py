@@ -7,49 +7,52 @@ from fnn_part_b_4_L5N import evaluate_fnn_param as L5N
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 
+epochs = 1000
 
 def worker_thread(param):
 
     layer, dropout = param
 
     if dropout:
-        result = eval("L{}()".format(layer))
+        result = eval("L{}(epochs,20)".format(layer))
     else:
-        result = eval("L{}N()".format(layer))
+        result = eval("L{}N(epochs,20)".format(layer))
 
     return result
 
-epochs = 1000
+def main():
 
-no_threads = mp.cpu_count()
+    no_threads = mp.cpu_count()
 
-params = [(3,True),(3,False),(4,True),(4,False),(5,True)]
-p = mp.Pool(processes=no_threads)
-results = p.map(worker_thread(), params)
+    params = [(3, True), (3, False), (4, True), (4, False), (5, True)]
+    p = mp.Pool(processes=no_threads)
+    results = p.map(worker_thread, params)
 
-test_accs = []
-training_accuracy = []
-legend = ["{} Layer Network".format(p[0]) if p[1] else "{} Layer Network, No Dropouts".format(p[0]) for p in params]
+    test_accs = []
+    training_accuracy = []
+    legend = ["{} Layer Network".format(p[0]) if p[1] else "{} Layer Network, No Dropouts".format(p[0]) for p in params]
 
-for i,result in enumerate(results):
-    print("Result: {} - {}".format(i,result[2]))
-    test_accs.append(result[0])
-    training_accuracy.append(result[1])
+    for i, result in enumerate(results):
+        print("Result: {} - {}".format(i, result[2]))
+        test_accs.append(result[0])
+        training_accuracy.append(result[1])
 
-plt.figure(1)
-for acc in test_accs:
-    plt.plot(range(epochs), acc)
-plt.xlabel(str(epochs) + ' iterations')
-plt.ylabel('Accuracy against Test Data')
-plt.legend(params)
+    plt.figure(1)
+    for acc in test_accs:
+        plt.plot(range(epochs), acc)
+    plt.xlabel(str(epochs) + ' iterations')
+    plt.ylabel('Accuracy against Test Data')
+    plt.legend(params)
 
-plt.figure(2)
-for acc in test_accs:
-    plt.plot(range(epochs), acc)
-plt.xlabel(str(epochs) + ' iterations')
-plt.ylabel('Accuracy against Test Data')
-plt.legend(params)
+    plt.figure(2)
+    for acc in test_accs:
+        plt.plot(range(epochs), acc)
+    plt.xlabel(str(epochs) + ' iterations')
+    plt.ylabel('Accuracy against Test Data')
+    plt.legend(params)
 
-plt.show()
+    plt.show()
 
+if __name__ == "__main__":
+    main()
 

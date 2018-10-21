@@ -143,7 +143,7 @@ def evaluate_fnn_param(param):
 
                 start_time = timer()
 
-                for start, end in zip(range(0, n+1, batch_size), range(batch_size, n+1, batch_size)):
+                for start, end in zip(range(0, m+1, batch_size), range(batch_size, m+1, batch_size)):
                     train_op.run(feed_dict={x: randomized_X[start:end], y_: randomized_Y[start:end], beta: decay})
 
                 end_time = timer()

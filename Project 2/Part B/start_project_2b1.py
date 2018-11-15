@@ -2,6 +2,9 @@ import numpy as np
 import pandas
 import tensorflow as tf
 import csv
+import matplotlib.pyplot as plt
+from google.colab import drive
+from timeit import default_timer as timer
 
 MAX_DOCUMENT_LENGTH = 100
 N_FILTERS = 10
@@ -75,6 +78,8 @@ def read_data_chars():
   
 def main():
   
+  drive.mount('/content/gdrive')
+
   x_train, y_train, x_test, y_test = read_data_chars()
 
   print(len(x_train))

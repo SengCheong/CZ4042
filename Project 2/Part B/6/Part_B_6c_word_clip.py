@@ -10,6 +10,7 @@ from mpl_toolkits import mplot3d
 MAX_DOCUMENT_LENGTH = 100
 HIDDEN_SIZE = 20
 MAX_LABEL = 15
+EMBEDDING_SIZE = 20
 
 epochs = 600
 lr = 0.01
@@ -21,45 +22,57 @@ tf.set_random_seed(seed)
 
 def rnn_model(x):
 
-  input_layer = tf.reshape(tf.one_hot(x, 256), [-1, MAX_DOCUMENT_LENGTH, 256]) 
-  char_list = tf.unstack(input_layer, axis=1)
+  word_vectors = tf.contrib.layers.embed_sequence(
+      x, vocab_size=n_words, embed_dim=EMBEDDING_SIZE)
+
+  word_list = tf.unstack(word_vectors, axis=1)
 
   cell = tf.nn.rnn_cell.GRUCell(HIDDEN_SIZE)
-  _, encoding = tf.nn.static_rnn(cell, char_list, dtype=tf.float32)
+  _, encoding = tf.nn.static_rnn(cell, word_list, dtype=tf.float32)
 
   logits = tf.layers.dense(encoding, MAX_LABEL, activation=None)
 
   return logits
 
-def read_data_chars():
+def data_read_words():
+
+  tf.reset_default_graph()
+  drive.mount('/content/gdrive')
   
   x_train, y_train, x_test, y_test = [], [], [], []
-
+  
   with open('/content/gdrive/My Drive/Colab Notebooks/train_medium.csv', encoding='utf-8') as filex:
     reader = csv.reader(filex)
     for row in reader:
-      x_train.append(row[1])
+      x_train.append(row[2])
       y_train.append(int(row[0]))
 
   with open('/content/gdrive/My Drive/Colab Notebooks/test_medium.csv', encoding='utf-8') as filex:
     reader = csv.reader(filex)
     for row in reader:
-      x_test.append(row[1])
+      x_test.append(row[2])
       y_test.append(int(row[0]))
   
   x_train = pandas.Series(x_train)
   y_train = pandas.Series(y_train)
   x_test = pandas.Series(x_test)
   y_test = pandas.Series(y_test)
-  
-  
-  char_processor = tf.contrib.learn.preprocessing.ByteProcessor(MAX_DOCUMENT_LENGTH)
-  x_train = np.array(list(char_processor.fit_transform(x_train)))
-  x_test = np.array(list(char_processor.transform(x_test)))
   y_train = y_train.values
   y_test = y_test.values
   
-  return x_train, y_train, x_test, y_test
+  vocab_processor = tf.contrib.learn.preprocessing.VocabularyProcessor(
+      MAX_DOCUMENT_LENGTH)
+
+  x_transform_train = vocab_processor.fit_transform(x_train)
+  x_transform_test = vocab_processor.transform(x_test)
+
+  x_train = np.array(list(x_transform_train))
+  x_test = np.array(list(x_transform_test))
+
+  no_words = len(vocab_processor.vocabulary_)
+  print('Total words: %d' % no_words)
+
+  return x_train, y_train, x_test, y_test, no_words
 
 def configure_statistics(logits, y_):
     
@@ -76,11 +89,9 @@ def configure_statistics(logits, y_):
     
 
 def main():
+  global n_words
 
-  tf.reset_default_graph()
-  drive.mount('/content/gdrive')
-
-  x_train, y_train, x_test, y_test = read_data_chars()
+  x_train, y_train, x_test, y_test, n_words = data_read_words()
 
   # Create the model
   x = tf.placeholder(tf.int64, [None, MAX_DOCUMENT_LENGTH])
@@ -90,18 +101,15 @@ def main():
   correct_prediction, accuracy, classification_errors = configure_statistics(logits, tf.one_hot(y_, MAX_LABEL))
 
   entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=tf.one_hot(y_, MAX_LABEL), logits=logits))
-  
   minimizer = tf.train.AdamOptimizer(lr)
 
-  grads_and_vars = minimizer.compute_gradients(entropy)
-
   # Gradient clipping
+  grads_and_vars = minimizer.compute_gradients(entropy)
   grad_clipping = tf.constant(2.0, name="grad_clipping")
   clipped_grads_and_vars = []
   for grad, var in grads_and_vars:
       clipped_grad = tf.clip_by_value(grad, -grad_clipping, grad_clipping)
       clipped_grads_and_vars.append((clipped_grad, var))
-
   # Gradient updates
   train_op = minimizer.apply_gradients(clipped_grads_and_vars)
 
@@ -120,7 +128,6 @@ def main():
 
     randomizedX, randomizedY = x_train,y_train
     testX,testY = x_test,y_test
-
 
     total_start = timer()
 
@@ -144,7 +151,7 @@ def main():
         training_acc_pt = accuracy.eval(feed_dict={x: x_train, y_: y_train})
         training_acc_pts.append(training_acc_pt)
         epoch_times.append(experiment_end-experiment_start)
-        
+
         if(e % 100 == 0):
           print('epoch', e, 'entropy', loss_pt, 'time', experiment_end - experiment_start)
 
@@ -160,10 +167,10 @@ def main():
     np_training_costs = np.expand_dims(np_training_costs,axis=0)
     np_times = np.expand_dims((total_end - total_start,np.mean(epoch_times)),axis=0)    
         
-    np.savetxt('/content/gdrive/My Drive/Colab Notebooks/6c_char_clip_training_cost.txt',np_training_costs)
-    np.savetxt('/content/gdrive/My Drive/Colab Notebooks/6c__test_accs.txt',np_test_accs)
-    np.savetxt('/content/gdrive/My Drive/Colab Notebooks/6c_training_acc.txt',np_training_accs)
-    np.savetxt('/content/gdrive/My Drive/Colab Notebooks/6c_time.txt',np_times)
+    np.savetxt('/content/gdrive/My Drive/Colab Notebooks/6c_word_clip_training_cost.txt',np_training_costs)
+    np.savetxt('/content/gdrive/My Drive/Colab Notebooks/6c_word_clip_test_accs.txt',np_test_accs)
+    np.savetxt('/content/gdrive/My Drive/Colab Notebooks/6c_word_clip_training_acc.txt',np_training_accs)
+    np.savetxt('/content/gdrive/My Drive/Colab Notebooks/6c_word_clip_time.txt',np_times)
 
     plt.figure(1)
     plt.plot(range(epochs), test_acc_pts)
